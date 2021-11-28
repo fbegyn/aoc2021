@@ -1,0 +1,7 @@
+#! /usr/bin/env sh
+
+day="$(printf '%02d' "$1")"
+part="$2"
+inputfile="$3"
+
+./go/bin/day${day} ${inputfile}
