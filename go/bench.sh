@@ -9,4 +9,4 @@ done
 
 echo $days
 
-hyperfine --warmup 10 --export-csv aoc2020.csv "${days[@]}"
+hyperfine --warmup 500 --export-csv aoc2020.csv "${days[@]}"

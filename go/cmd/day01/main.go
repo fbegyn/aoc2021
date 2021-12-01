@@ -17,29 +17,35 @@ func main() {
 		panic(err)
 	}
 
-	sol1, sums := part1(depths)
-	fmt.Println(sums)
-	sol2, _ := helpers.IncDecCount(sums)
-
-	fmt.Printf("Solution for part 1: %d\n", sol1)
-	fmt.Printf("Solution for part 2: %d\n", sol2)
-}
-
-func part1(depths []int) (incCount int, sums []int) {
-	previous := -1000
+	previous, previousSum := 0, 0
+	sum := 0
+	incCount1, incCount2 := 0, 0
 
 	for ind, depth := range depths {
 		if ind < len(depths)-2 {
-			sums = append(sums, depths[ind]+depths[ind+1]+depths[ind+2])
+			sum = depths[ind] + depths[ind+1] + depths[ind+2]
 		}
+
+		// skip the rest for the first element, not relevant
 		if ind == 0 {
+			previous = depth
+			previousSum = sum
 			continue
 		}
+
+		// check if the previous depth is smaller than the current
 		if previous < depth {
-			incCount++
+			incCount1++
+		}
+
+		// check if the previous sliding window sum is smaller than the current
+		if previousSum < sum {
+			incCount2++
 		}
 		previous = depth
+		previousSum = sum
 	}
 
-	return
+	fmt.Printf("Solution for part 1: %d\n", incCount1)
+	fmt.Printf("Solution for part 2: %d\n", incCount2)
 }
