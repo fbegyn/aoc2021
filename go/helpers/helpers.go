@@ -398,3 +398,35 @@ func RunRobot(grid map[Point]int64, start Point, input <-chan int64, output chan
 		}
 	}
 }
+
+func IncDecCount(input []int) (incCount, decCount int) {
+	previous := 0
+	for ind, inp := range input {
+		if ind == 0 {
+			previous = inp
+			continue
+		}
+		if previous < inp {
+			incCount++
+		}
+		if previous > inp {
+			decCount++
+		}
+		previous = inp
+	}
+	return
+}
+
+func IntSlidingWindowSum(input []int, window int) (sums []int) {
+	for ind := range input {
+		sum := 0
+		for i := 0; i < window; i++ {
+			sum += input[ind+i]
+		}
+		sums = append(sums, sum)
+		if ind >= len(input)-(window-1) {
+			break
+		}
+	}
+	return
+}
