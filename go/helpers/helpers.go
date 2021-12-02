@@ -74,6 +74,14 @@ func Abs(x int64) int64 {
 	return x
 }
 
+func LinesToStrings(file *os.File) (strings []string) {
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		strings = append(strings, scanner.Text())
+	}
+	return
+}
+
 func LinesToInts(file *os.File) (ints []int, err error) {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
