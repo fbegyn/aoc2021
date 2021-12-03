@@ -68,28 +68,38 @@ func CalcRating(reports []uint, n int, co2 bool) uint {
 	zeros, ones, oneSl, zeroSl := OnesZerosCount(reports, n)
 
 	if co2 {
+		if zeros < ones {
+			if len(zeroSl) == 1 {
+				return zeroSl[0]
+			}
+			return CalcRating(zeroSl, n-1, co2)
+		}
+		if ones < zeros {
+			if len(oneSl) == 1 {
+				return oneSl[0]
+			}
+			return CalcRating(oneSl, n-1, co2)
+		}
 		if len(zeroSl) == 1 {
 			return zeroSl[0]
 		}
-
-		if zeros < ones {
-			return CalcRating(zeroSl, n-1, co2)
-		}
-		if ones < zeros {
-			return CalcRating(oneSl, n-1, co2)
-		}
 		return CalcRating(zeroSl, n-1, co2)
 	} else {
+		if zeros < ones {
+			if len(oneSl) == 1 {
+				return oneSl[0]
+			}
+			return CalcRating(oneSl, n-1, co2)
+		}
+		if ones < zeros {
+			if len(zeroSl) == 1 {
+				return zeroSl[0]
+			}
+			return CalcRating(zeroSl, n-1, co2)
+		}
 		if len(oneSl) == 1 {
 			return oneSl[0]
 		}
-
-		if zeros < ones {
-			return CalcRating(oneSl, n-1, co2)
-		}
-		if ones < zeros {
-			return CalcRating(zeroSl, n-1, co2)
-		}
-		    return CalcRating(oneSl, n-1, co2)
+		return CalcRating(oneSl, n-1, co2)
 	}
 }
