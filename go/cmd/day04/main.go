@@ -15,40 +15,36 @@ type board struct {
 }
 
 func main() {
+	// throw the input into a go channel
 	file := os.Args[1]
 	input := make(chan string)
 	go helpers.StreamLines(file, input)
 
+	// read the first line and parse into int array
 	callStr := <-input
 	numbersStr := strings.Split(callStr, ",")
 	numbers := make([]int, len(numbersStr))
 	for ind, str := range numbersStr {
 		number, err := strconv.Atoi(str)
-		numbers[ind] = number
 		if err != nil {
 			panic(err)
 		}
+		numbers[ind] = number
 	}
+
+	// throw away the empty line after the first
 	<-input
 
+	// load in the bingo boards
 	boards := []board{}
-
 	c := 0
 	temp := [5][5]int{}
-	skip := false
 	for line := range input {
-		if skip {
-			skip = false
-			continue
-		}
 		row := [5]int{}
-		split := strings.Split(line, " ")
+		split := strings.Fields(line)
 		j := 0
 		for _, st := range split {
-			if st == "" {
-				continue
-			}
-			nr, err := strconv.Atoi(strings.TrimSpace(st))
+			nr, err := strconv.Atoi(st)
 			if err != nil {
 				panic(err)
 			}
@@ -59,32 +55,35 @@ func main() {
 		temp[c] = row
 		c++
 		if 5 <= c {
-			skip = true
+			<-input
 			t := board{temp, [5][5]bool{}}
 			boards = append(boards, t)
 			c = 0
 		}
 	}
 
-	bingo := false
-	winners := make(map[int]bool)
+	// time to play bingo!
+	winners := make(map[int]bool) // keep track of who already won, so we can skip
 	order := make([][2]int, len(boards))
 	count := 0
-
+	// start calling off numbers
 	for _, call := range numbers {
 		for ind := range boards {
+			// skip over the already won boards
 			if winners[ind] {
 				continue
 			}
+
+			// play bingo!
 			boards[ind].Mark(call)
-			if bingo = boards[ind].CheckBingo(); bingo {
-				fmt.Println("BINGO!")
-				boards[ind].Print()
+			if boards[ind].CheckBingo() {
 				winners[ind] = true 
 				order[count] = [2]int{ind, call}
 				count++
 			}
 		}
+
+		// once all boards finished, stop
 		if count >= len(boards) {
 			break
 		}
@@ -96,22 +95,10 @@ func main() {
 	fmt.Printf("solution to part 1: %d\n", order[len(order)-1][1]*sumLast)
 }
 
-func (b *board) Print() {
-	for _, y := range b.numbers {
-		for _, x := range y {
-			fmt.Printf("%2d ", x)
-		}
-		fmt.Println()
-	}
-	fmt.Println()
-}
-
 func (b* board) Mark(nr int) {
 	for yi, y := range b.numbers {
 		for xi, x := range y {
-			if x == nr {
-				b.marked[yi][xi] = true
-			}
+			if x == nr { b.marked[yi][xi] = true }
 		}
 	}
 }
@@ -123,9 +110,7 @@ func (b *board) CheckBingo() bool {
 			xbingo = xbingo && b.marked[i][j]
 			ybingo = ybingo && b.marked[j][i]
 		}
-		if xbingo || ybingo {
-			return true
-		}
+		if xbingo || ybingo { return true }
 	}
 	return false
 }
@@ -133,10 +118,18 @@ func (b *board) CheckBingo() bool {
 func (b *board) SumUnmarked() (sum int) {
 	for y, yv := range b.marked {
 		for x, xv := range yv {
-			if !xv {
-				sum += b.numbers[y][x]
-			}
+			if !xv { sum += b.numbers[y][x] }
 		}
 	}
 	return
+}
+
+func (b *board) Print() {
+	for _, y := range b.numbers {
+		for _, x := range y {
+			fmt.Printf("%2d ", x)
+		}
+		fmt.Println()
+	}
+	fmt.Println()
 }
