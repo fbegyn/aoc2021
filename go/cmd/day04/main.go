@@ -54,7 +54,6 @@ func main() {
 	 		row[elIndex] = nr
 	 	}
 
-		// add the row to the current board
 		boards[current].numbers[index%5] = row
 		// if we fill a board, move along to the next
 		if ((index) % 5) == 4 { // 0-based index
@@ -64,28 +63,25 @@ func main() {
 
 	// time to play bingo!
 	winners := make(map[int]bool) // keep track of who already won, so we can skip
-	order := make([][2]int, len(boards))
-	count := 0
-	// start calling off numbers
-	for _, call := range numbers {
-		for ind := range boards {
-			// skip over the already won boards
-			if winners[ind] {
-				continue
-			}
+	order := make([][2]int, len(boards)) // we need the index of the board as wel as the last number called
+	// start looking for winners
+	for count := 0; count < len(boards); count++ {
+		// start calling off numbers
+		for _, call := range numbers {
+			for ind := range boards {
+				// skip over the already won boards
+				if winners[ind] {
+					continue
+				}
 
-			// play bingo!
-			boards[ind].Mark(call)
-			if boards[ind].CheckBingo() {
-				winners[ind] = true 
-				order[count] = [2]int{ind, call}
-				count++
+				// play bingo!
+				boards[ind].Mark(call)
+				if boards[ind].CheckBingo() {
+					winners[ind] = true 
+					order[count] = [2]int{ind, call}
+					count++
+				}
 			}
-		}
-
-		// once all boards finished, stop
-		if count >= len(boards) {
-			break
 		}
 	}
 
