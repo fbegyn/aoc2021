@@ -85,10 +85,8 @@ func main() {
 		}
 	}
 
-	sumFirst := boards[order[0][0]].SumUnmarked()
-	fmt.Printf("solution to part 1: %d\n", order[0][1]*sumFirst)
-	sumLast := boards[order[len(order)-1][0]].SumUnmarked()
-	fmt.Printf("solution to part 1: %d\n", order[len(order)-1][1]*sumLast)
+	fmt.Printf("solution to part 1: %d\n", order[0][1]*boards[order[0][0]].SumUnmarked())
+	fmt.Printf("solution to part 2: %d\n", order[len(order)-1][1]*boards[order[len(order)-1][0]].SumUnmarked())
 }
 
 func (b* board) Mark(nr int) {
