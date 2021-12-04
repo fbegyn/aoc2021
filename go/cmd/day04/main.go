@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strconv"
@@ -15,14 +16,20 @@ type board struct {
 }
 
 func main() {
-	// throw the input into a go channel
+	// throw the input lines into an array, without the empty lines
 	file := os.Args[1]
-	input := make(chan string)
-	go helpers.StreamLines(file, input)
+	input := helpers.OpenFile(file)
+	lines := []string{}
+	scanner := bufio.NewScanner(input)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line != "" {
+		    lines = append(lines, scanner.Text())
+		}
+	}
 
 	// read the first line and parse into int array
-	callStr := <-input
-	numbersStr := strings.Split(callStr, ",")
+	numbersStr := strings.Split(lines[0], ",")
 	numbers := make([]int, len(numbersStr))
 	for ind, str := range numbersStr {
 		number, err := strconv.Atoi(str)
@@ -32,35 +39,28 @@ func main() {
 		numbers[ind] = number
 	}
 
-	// throw away the empty line after the first
-	<-input
+	 // load in the bingo boards
+	boards := make([]board, len(lines[1:])/5)
+	current := 0
+	for index, line := range lines[1:] {
+		// skim the row
+	 	row := [5]int{}
+	 	split := strings.Fields(line)
+	 	for elIndex, elementStr := range split {
+	 		nr, err := strconv.Atoi(elementStr)
+	 		if err != nil {
+	 			panic(err)
+	 		}
+	 		row[elIndex] = nr
+	 	}
 
-	// load in the bingo boards
-	boards := []board{}
-	c := 0
-	temp := [5][5]int{}
-	for line := range input {
-		row := [5]int{}
-		split := strings.Fields(line)
-		j := 0
-		for _, st := range split {
-			nr, err := strconv.Atoi(st)
-			if err != nil {
-				panic(err)
-			}
-			row[j] = nr
-			j++
+		// add the row to the current board
+		boards[current].numbers[index%5] = row
+		// if we fill a board, move along to the next
+		if ((index) % 5) == 4 { // 0-based index
+			current += 1
 		}
-
-		temp[c] = row
-		c++
-		if 5 <= c {
-			<-input
-			t := board{temp, [5][5]bool{}}
-			boards = append(boards, t)
-			c = 0
-		}
-	}
+	 }
 
 	// time to play bingo!
 	winners := make(map[int]bool) // keep track of who already won, so we can skip
