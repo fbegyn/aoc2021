@@ -19,6 +19,24 @@ func OpenFile(f string) (file *os.File) {
 	return
 }
 
+func Atoi(str string) int {
+	n, err := strconv.Atoi(str)
+	if err != nil {
+		panic(err)
+	}
+	return n
+}
+
+func InputToLines(file string) (lines []string) {
+	input := OpenFile(file)
+	defer input.Close()
+	scanner := bufio.NewScanner(input)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	return
+}
+
 func StreamLines(file string, output chan<- string) {
 	input := OpenFile(file)
 	defer input.Close()
@@ -209,7 +227,7 @@ func ToggleInstruction(prog []string, ind int) []string {
 }
 
 type Point struct {
-	x, y int64
+	X, Y int64
 }
 
 func NewPoint(x, y int64) *Point {
@@ -217,8 +235,8 @@ func NewPoint(x, y int64) *Point {
 }
 
 func (p *Point) Move(n [2]int64) {
-	p.x += n[0]
-	p.y += n[1]
+	p.X += n[0]
+	p.Y += n[1]
 }
 
 func (p *Point) MoveDir(dir rune) {
@@ -248,18 +266,18 @@ func (p *Point) MoveDirN(dir rune, steps int64) {
 }
 
 func (p *Point) MoveRelative(n *Point) {
-	p.Move([2]int64{n.x, n.y})
+	p.Move([2]int64{n.X, n.Y})
 }
 
 func (p *Point) MoveRelativeN(n *Point, times int64) {
 	p.Move([2]int64{
-		times * (n.x),
-		times * (n.y),
+		times * (n.X),
+		times * (n.Y),
 	})
 }
 
 func (p *Point) Angle(t Point) (angle float64) {
-	angle = math.Atan2(float64(t.x-p.x), float64(t.y-p.y)) * 180 / math.Pi
+	angle = math.Atan2(float64(t.X-p.X), float64(t.Y-p.Y)) * 180 / math.Pi
 	if angle < 0 {
 		angle += 360
 	}
@@ -268,14 +286,14 @@ func (p *Point) Angle(t Point) (angle float64) {
 
 func (p *Point) Rotate90(cc bool) {
 	if cc {
-		p.x, p.y = -p.y, p.x
+		p.X, p.Y = -p.Y, p.X
 	} else {
-		p.x, p.y = p.y, -p.x
+		p.X, p.Y = p.Y, -p.X
 	}
 }
 
 func (p *Point) ManhattanDist(t Point) int64 {
-	return Abs(p.x-t.x) + Abs(p.y-t.y)
+	return Abs(p.X-t.X) + Abs(p.Y-t.Y)
 }
 
 func LCM(a, b int64, integers ...int64) int64 {
@@ -299,25 +317,25 @@ func RenderGrid(grid map[Point]int64) [][]string {
 	minX, minY := int64(9999999), int64(99999999)
 	maxX, maxY := int64(-9999999), int64(-9999999)
 	for k, _ := range grid {
-		if k.y < minY {
-			minY = k.y
+		if k.Y < minY {
+			minY = k.Y
 		}
-		if k.x < minX {
-			minX = k.x
+		if k.X < minX {
+			minX = k.X
 		}
-		if maxY < k.y {
-			maxY = k.y
+		if maxY < k.Y {
+			maxY = k.Y
 		}
-		if maxX < k.x {
-			maxX = k.x
+		if maxX < k.X {
+			maxX = k.X
 		}
 	}
 	height := maxY - minY + 1
 	width := maxX - minX + 1
 	image := make([][]string, height)
 	for k, v := range grid {
-		x := k.x - minX
-		y := k.y - minY
+		x := k.X - minX
+		y := k.Y - minY
 		if image[y] == nil {
 			image[y] = make([]string, width)
 		}
@@ -396,13 +414,13 @@ func RunRobot(grid map[Point]int64, start Point, input <-chan int64, output chan
 		// Evaluate movement
 		switch direction {
 		case 'U':
-			location.y++
+			location.Y++
 		case 'D':
-			location.y--
+			location.Y--
 		case 'L':
-			location.x--
+			location.X--
 		case 'R':
-			location.x++
+			location.X++
 		}
 	}
 }
