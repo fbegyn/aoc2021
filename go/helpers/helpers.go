@@ -234,6 +234,15 @@ func NewPoint(x, y int64) *Point {
 	return &Point{x, y}
 }
 
+// Parse a point from a x,y notation
+func ParsePoint(str string) *Point {
+	split := strings.Split(str, ",")
+	return NewPoint(
+		int64(Atoi(split[0])),
+		int64(Atoi(split[1])),
+	)
+}
+
 func (p *Point) Move(n [2]int64) {
 	p.X += n[0]
 	p.Y += n[1]
