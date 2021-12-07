@@ -29,7 +29,7 @@ func main() {
 	mean := sum/len(positions)
 	fmt.Printf("solution to part 1: %d\n", part1)
 
-	candidates := [3]int{mean-1, mean, mean+1}
+	candidates := [2]int{mean, mean+1}
 	cheapest := 100000000000
 	for _, cand := range candidates {
 		fuel := 0
