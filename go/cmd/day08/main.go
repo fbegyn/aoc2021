@@ -51,44 +51,46 @@ func part2(lines []string) (sum int) {
 		}
 
 		outputs := strings.Fields(split[1])
+		number := 0
 		for _, output := range outputs {
 			payload := charToInt(output)
-			sum *= 10
+			number *= 10
 			switch len(output) {
 			case 2:
-				sum += 1
+				number += 1
 			case 3:
-				sum += 7
+				number += 7
 			case 4:
-				sum += 4
+				number += 4
 			case 5:
 				switch {
 				// if the output is 5 long and matches with 1 (a,b)
 				// only possible number displayed is a 3
 				case payload&matchedChars[1] == matchedChars[1]:
-					sum += 3
+					number += 3
 				// if the field share 3 bits with a 4, it's a 5
 				// matched e,f,b => leaves d and c
 				case bits.OnesCount(uint(payload&matchedChars[4])) == 3:
-					sum += 5
+					number += 5
 				// match through exclusion
 				default:
-					sum += 2
+					number += 2
 				}
 			case 6:
 				switch {
 				// a 6 shares a,b with the number 1 on the display
 				case payload&matchedChars[1] != matchedChars[1]:
-					sum += 6
+					number += 6
 				// a 9 shares a,e,f,b with number 4, also exclusion
 				case payload&matchedChars[4] == matchedChars[4]:
-					sum += 9
+					number += 9
 				default:
 				}
 			case 7:
-				sum += 8
+				number += 8
 			}
 		}
+		sum += number
 	}
 	return sum
 }
