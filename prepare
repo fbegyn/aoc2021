@@ -1,5 +1,9 @@
 #! /usr/bin/env sh
 
+if ! (which go 2>&1 >/dev/null); then
+	echo "Please make sure 'go' is installed and in your PATH"
+fi
+
 day="$(printf '%02d' "$1")"
 part="$2"
 inputfile="$3"
