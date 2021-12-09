@@ -7,7 +7,7 @@ import (
 	"github.com/fbegyn/aoc2021/go/helpers"
 )
 
-func TestPart1(t *testing.T) {
+func BenchmarkPart1(b *testing.B) {
 	file := "../../../inputs/day09/test.txt"
 	scanner := bufio.NewScanner(helpers.OpenFile(file))
 	heightMap := [][]int{}
@@ -20,13 +20,12 @@ func TestPart1(t *testing.T) {
 		heightMap = append(heightMap, scanned)
 	}
 
-	answer, _ := Part1(heightMap)
-	if answer != 15 {
-		t.Errorf("Part1 got %d, wants %d", answer, 15)
+	for i := 0; i < b.N; i++ {
+		Part1(heightMap)
 	}
 }
 
-func TestPart2(t *testing.T) {
+func BenchmarkPart2(b *testing.B) {
 	file := "../../../inputs/day09/test.txt"
 	scanner := bufio.NewScanner(helpers.OpenFile(file))
 	heightMap := [][]int{}
@@ -40,8 +39,7 @@ func TestPart2(t *testing.T) {
 	}
 
 	_, points := Part1(heightMap)
-	part2 := Part2(heightMap, points)
-	if part2 != 1134 {
-		t.Errorf("Part1 got %d, wants %d", part2, 1134)
+	for i := 0; i < b.N; i++ {
+		Part2(heightMap, points)
 	}
 }
