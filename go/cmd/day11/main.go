@@ -17,16 +17,27 @@ func main() {
 			energyLevels[y*10+x] = int(r - '0')
 		}
 	}
+	levels2 := [100]int{}
+	copy(levels2[:], energyLevels[:])
 
 	part1 := 0
-	fmt.Println(run(energyLevels[:], func(step, flashes int) bool {
+	run(energyLevels[:], func(step, flashes int) bool {
 		part1 += flashes
 
-		return step == 4
-	}))
+		return step == 99
+	})
+
+	var part2 int
+	run(levels2[:], func(step, flashes int) bool {
+		if flashes == 100 {
+			part2 = step + 1
+			return true
+		}
+		return false
+	})
 
 	fmt.Printf("solution for part 1: %d\n", part1)
-	fmt.Printf("solution for part 2: %d\n")
+	fmt.Printf("solution for part 2: %d\n", part2)
 }
 
 var coord = [8][2]int{
@@ -38,16 +49,6 @@ var coord = [8][2]int{
 	{-1, -1},
 	{1, -1},
 	{-1, 1},
-}
-
-func print(levels []int) {
-	for y := 0; y < 10; y++ {
-		for x := 0; x < 10; x++ {
-			fmt.Printf("%d ", levels[y*10+x])
-		}
-		fmt.Println()
-	}
-	fmt.Println()
 }
 
 func run(energyLevels []int, stop func(step, flashes int) bool) int {
@@ -78,9 +79,6 @@ func run(energyLevels []int, stop func(step, flashes int) bool) int {
 			}
 		}
 
-		fmt.Printf("After step %d:\n", i+1)
-		print(energyLevels)
-
 		if stop(i, flashes) {
 			return flashes
 		}
@@ -98,22 +96,23 @@ func flash(levels []int, x, y int) int {
 	levels[y*10+x] = -1
 
 	for _, sel := range coord {
+		xsel, ysel := x+sel[0], y+sel[1]
 		// if we go out of range, skip
-		if x+sel[0] < 0 || x+sel[0] >= 10 || y+sel[1] < 0 || y+sel[1] >= 10 {
+		if xsel < 0 || xsel >= 10 || ysel < 0 || ysel >= 10 {
 			continue
 		}
 
 		// if the selected octopus already flashed, skip
-		if levels[(y+sel[1])*10+(x+sel[0])] == -1 {
+		if levels[ysel*10+xsel] == -1 {
 			continue
 		}
 
 		// increase the level of the octopus by 1
-		levels[(y+sel[1])*10+(x+sel[0])]++
+		levels[ysel*10+xsel]++
 
 		// if the octopus energy level goes > 9, flash it as well
-		if levels[(y+sel[1])*10+(x+sel[0])] > 9 {
-			flashes += flash(levels, y+sel[1], x+sel[0])
+		if levels[ysel*10+xsel] > 9 {
+			flashes += flash(levels, xsel, ysel)
 		}
 	}
 	return flashes
